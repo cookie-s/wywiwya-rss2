@@ -1,0 +1,5 @@
+name = "wywiwya-rss2"
+main = "src/index.ts"
+compatibility_date = "2023-02-05"
+
+node_compat = true # feed
