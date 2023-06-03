@@ -5,9 +5,9 @@ WYWIWYA: https://github.com/smallkirby/wywiwya
 
 ### Develop
 
-dev: `wrangler dev --local`
+dev: `dotenv wrangler dev --local`
 
-deploy: `wrangler publish`
+deploy: `dotenv wrangler publish`
 
 
 ### References
