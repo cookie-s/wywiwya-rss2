@@ -19,19 +19,21 @@ export interface Env {
 	// MY_BUCKET: R2Bucket;
 }
 
-// export default {
-// 	async fetch(
-// 		request: Request,
-// 		env: Env,
-// 		ctx: ExecutionContext
-// 	): Promise<Response> {
-// 		return new Response("Hello World!");
-// 	},
-// };
-
 import { Hono } from 'hono';
 import { poweredBy } from 'hono/powered-by'
 import { Feed } from 'feed';
+
+// https://github.com/smallkirby/wywiwya/blob/v0.2.3/typings/diary.d.ts
+type DiaryResult = {
+	dateID: string,
+	createdAt: number,
+	lastUpdatedAt: number,
+	isPublic: boolean,
+	isTemporary: boolean,
+	contentMd: string,
+	author: string,
+	id: string,
+};
 
 const app = new Hono()
 
@@ -55,12 +57,14 @@ app.get('/users/:user_id', async (c) => {
 	});
 	const Unix2Date = (unix: number) => new Date(unix);
 
-	const json = await resp.json();
+	const json: {result: DiaryResult[]} = await resp.json();
 
 	const channel = new Feed({
+		id: `https://wywiwya.smallkirby.xyz/users/${user_id}`,
 		title: `${user_id} -- WYWIWYA`,
 		link: `https://wywiwya.smallkirby.xyz/users/${user_id}`,
 		updated: Unix2Date(json.result.slice(-1)[0].lastUpdatedAt),
+		copyright: 'copyright',
 	});
 	for(const item of json.result) {
 		const {
@@ -75,10 +79,10 @@ app.get('/users/:user_id', async (c) => {
 			title: id, // MUST exist for some library internal reason
 			link: `https://wywiwya.smallkirby.xyz/view/${id}`,
 			description: contentMd,
-			author: {
+			author: [{
 				name: author,
 				link: `https://wywiwya.smallkirby.xyz/users/${author}`,
-			},
+			}],
 			published: Unix2Date(createdAt),
 			date: Unix2Date(lastUpdatedAt),
 		});
